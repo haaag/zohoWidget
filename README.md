@@ -1,5 +1,21 @@
 # Zoho CRM & Widget Script
 
+## Folder Structure
+
+    ├── app
+    │   ├── css
+    │   │   └── style.css
+    │   ├── js
+    │   │   ├── crm_functions.js
+    │   │   ├── functions.js
+    │   │   ├── main.js
+    │   ├── translations
+    │   │   └── en.json
+    │   └── widget.html
+    ├── dist
+    ├── node_modules
+    └── server
+
 ## Description
 
 Small Widget written in Javascript to integrate external API with Zoho CRM
@@ -55,6 +71,8 @@ Return type: `promise`
 
 ### Initializing the widget.
 - [ZOHO.embeddedApp.init()](ZOHO.embeddedApp.init())
+
+
 
 ## Reference
 [JS SDK for Zoho CRM](https://help.zwidgets.com/help/latest/index.html)
