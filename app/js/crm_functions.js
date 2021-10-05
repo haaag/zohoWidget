@@ -12,7 +12,7 @@ async function sendEmail(ware, offerToken, potentialID, wareName, offerName) {
   swal('Enviando información', {
     icon: false,
     button: false,
-    timer: 2000,
+    timer: 3000,
   })
   let connName = 'widget_send'
   let sendData = {
