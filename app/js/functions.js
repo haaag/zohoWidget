@@ -178,7 +178,7 @@ async function showOffers() {
       cleanDisplay()
       swal('Buscando Ofertas!', {
         button: false,
-        timer: 2000,
+        timer: 2500,
       }).then(() => {
         displayItemsList(offers['data'], 'offers', form, container)
         document.getElementById('title').innerHTML = 'Selecciona tu Oferta'
