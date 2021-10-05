@@ -1,4 +1,6 @@
 var globalOffers
+const moduleName = 'Deals'
+
 
 async function sendEmail(ware, offerToken, potentialID, wareName, offerName) {
   /*
@@ -9,30 +11,37 @@ async function sendEmail(ware, offerToken, potentialID, wareName, offerName) {
    * @offerName: string - potential id
    * The return value is 'bool'
    */
-  swal('Enviando información', {
-    icon: false,
-    button: false,
-    timer: 3000,
-  })
-  let connName = 'widget_send'
-  let sendData = {
-    arguments: JSON.stringify({
-      offer_token: offerToken,
-      ware_id: ware,
-      form_id: potentialID,
-      ware_name: wareName,
-      offer_name: offerName,
-    }),
-  }
-  const send = await ZOHO.CRM.FUNCTIONS.execute(connName, sendData).then((data) => {
-    const result = data['details']['output']
-    const response = JSON.parse(result)
-    if (response.code !== 201) {
-      return false
+  const start = Date.now()
+  try {
+    swal('Enviando información', {
+      icon: false,
+      button: false,
+      timer: 4000,
+    })
+    let connName = 'widget_send'
+    let sendData = {
+      arguments: JSON.stringify({
+        offer_token: offerToken,
+        ware_id: ware,
+        form_id: potentialID,
+        ware_name: wareName,
+        offer_name: offerName,
+      }),
     }
-    return true
-  })
-  return send
+    const send = await ZOHO.CRM.FUNCTIONS.execute(connName, sendData).then((data) => {
+      const result = data['details']['output']
+      const response = JSON.parse(result)
+      if (response.code !== 201) {
+        return false
+      }
+      return true
+    })
+    return send
+  } catch (err) {
+    console.error(err)
+  } finally {
+    console.info(Date.now() - start)
+  }
 }
 
 function addNote(moduleName, content, potentialID) {
@@ -69,4 +78,18 @@ async function getOffers(wareURL) {
   return offersList
 }
 
-export { sendEmail, addNote, getCRMWares, getOffers, globalOffers }
+async function getFormData(moduleName, userData) {
+  const formData = await ZOHO.CRM.API.getRecord({
+    Entity: moduleName,
+    RecordID: userData.potential_id,
+  }).then(function (data) {
+    if (data.status != 204) {
+      return data['data'][0]
+    } else {
+      return null
+    }
+  })
+  return await formData
+}
+
+export { sendEmail, addNote, getCRMWares, getOffers, globalOffers, getFormData, moduleName }
