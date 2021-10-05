@@ -1,4 +1,4 @@
-import { sendEmail, addNote, getCRMWares, getOffers, globalOffers } from './crm_functions.js'
+import { sendEmail, addNote, getCRMWares, getOffers, globalOffers, moduleName } from './crm_functions.js'
 
 let title = document.getElementById('title')
 let globalWares
@@ -9,7 +9,6 @@ let buttonHolder = document.getElementById('buttons')
 
 const closeWidget = ZOHO.CRM.UI.Popup.close
 const closeWidgetReload = ZOHO.CRM.UI.Popup.closeReload
-const moduleName = 'Deals'
 const sendDataAlert = (message) => swal({ title: 'Estas seguro?', text: message, icon: 'info', buttons: true })
 
 // INFO: Populate userData object
@@ -79,7 +78,7 @@ function displayItemsList(data, type, form, container) {
   container.appendChild(form)
 }
 
-async function getFormData(moduleName, userData) {
+/* async function getFormData(moduleName, userData) {
   const formData = await ZOHO.CRM.API.getRecord({
     Entity: moduleName,
     RecordID: userData.potential_id,
@@ -91,59 +90,69 @@ async function getFormData(moduleName, userData) {
     }
   })
   return await formData
-}
+} */
 
 async function validateFormData(formData) {
-  if (formData != null || formData != undefined) {
-    const requiredKey = ['Pais', 'Phone', 'Email']
-    let logErrors = []
-    requiredKey.map((elem) => {
-      // if (formData[elem] === null || formData[elem] === '') {
-      if (!formData[elem]) {
-        logErrors.push(elem)
-      }
-    })
-    if (logErrors.length > 0) {
-      let newLine = '\n- '
-      let message = 'Falta completar los siguientes campos:\n'
-      for (const error in logErrors) {
-        message = message + newLine + logErrors[error]
-      }
-      let waitOk = await swal(message, {
-        title: 'Falta Información',
-        icon: 'warning',
-        button: true,
-        closeOnClickOutside: false,
+  try {
+    if (formData != null || formData != undefined) {
+      const requiredKey = ['Pais', 'Phone', 'Email']
+      let logErrors = []
+      requiredKey.map((elem) => {
+        // if (formData[elem] === null || formData[elem] === '') {
+        if (!formData[elem]) {
+          logErrors.push(elem)
+        }
       })
-      if (waitOk) {
-        console.log('Error: Falta de Datos')
-        closeWidget()
+      if (logErrors.length > 0) {
+        let newLine = '\n- '
+        let message = 'Falta completar los siguientes campos:\n'
+        for (const error in logErrors) {
+          message = message + newLine + logErrors[error]
+        }
+        let waitOk = await swal(message, {
+          title: 'Falta Información',
+          icon: 'warning',
+          button: true,
+          closeOnClickOutside: false,
+        })
+        if (waitOk) {
+          console.log('Error: Falta de Datos')
+          closeWidget()
+        }
+      } else {
+        // console.log('Datos Validados')
+        return true
       }
     } else {
-      // console.log('Datos Validados')
-      return true
+      console.log('Error: on Validate')
+      swal('Error: On validate data.')
+      return false
     }
-  } else {
-    console.log('Error: on Validate')
-    swal('Error: On validate data.')
-    return false
+  }
+  catch (error) {
+    console.error("validateFormData", error.name, error.message)
   }
 }
 
 async function userLoop() {
-  cleanDisplay()
-  clearUserData()
-  const data = await getCRMWares()
-  globalWares = data
-  const wares = cleanCRMData(data)
-  swal('Cargando Wares', {
-    buttons: false,
-    timer: 1500,
-  }).then(() => {
-    displayItemsList(wares, 'wares', form, container)
-    createButton('Ver Ofertas', 'button-ofertas', newShowOffers)
-    title.innerHTML = 'Selecciona tu Ware'
-  })
+  try {
+    cleanDisplay()
+    clearUserData()
+    const data = await getCRMWares()
+    globalWares = data
+    const wares = cleanCRMData(data)
+    swal('Cargando Wares', {
+      buttons: false,
+      timer: 1500,
+    }).then(() => {
+      displayItemsList(wares, 'wares', form, container)
+      createButton('Ver Ofertas', 'button-ofertas', newShowOffers)
+      title.innerHTML = 'Selecciona tu Ware'
+    })
+  }
+  catch (error) {
+    console.error("userLoop", error.name, error.message)
+  }
 }
 
 function createButton(inner, className, func) {
@@ -209,7 +218,7 @@ async function newShowOffers() {
   } else {
     swal('Buscando Ofertas', {
       button: false,
-      timer: 1000,
+      timer: 2000,
     }).then(async () => {
       let offers = await getOffers(userData.ware.url)
       let message = offers['data']['message']
@@ -297,8 +306,4 @@ function clearUserData() {
   }
 }
 
-function showMeUser() {
-  console.log(userData)
-}
-
-export { userLoop, cleanCRMData, getItemChossed, createRadioBox, displayItemsList, getFormData, validateFormData, userData }
+export { userLoop, cleanCRMData, getItemChossed, createRadioBox, displayItemsList, validateFormData, userData }
