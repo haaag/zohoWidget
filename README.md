@@ -1,5 +1,9 @@
 # Zoho CRM & Widget Script
 
+## Description
+
+Small Widget written in Javascript to integrate external API with Zoho CRM
+
 ## Folder Structure
 
     ├── app
@@ -16,9 +20,6 @@
     ├── node_modules
     └── server
 
-## Description
-
-Small Widget written in Javascript to integrate external API with Zoho CRM
 
 ## Functions I used for this project
 
