@@ -68,10 +68,10 @@ Return type: `promise`
 
 ##  Register Listeners with EmbededApp
 ### Subscribe to the EmbeddedApp onPageLoad event before initializing
-- [ZOHO.embeddedApp.on("PageLoad")](ZOHO.embeddedApp.on("PageLoad"))
+- [ZOHO.embeddedApp.on("PageLoad")](https://help.zwidgets.com/help/latest/index.html)
 
 ### Initializing the widget.
-- [ZOHO.embeddedApp.init()](ZOHO.embeddedApp.init())
+- [ZOHO.embeddedApp.init()](https://help.zwidgets.com/help/latest/index.html)
 
 
 
