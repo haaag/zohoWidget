@@ -2,7 +2,7 @@
 
 ## Description
 
-Small Widget written in Javascript to integrate external API with Zoho CRM
+I'm learning Javascript so I made a small Widget to integrate external API with Zoho CRM
 
 ## Folder Structure
 
