@@ -1,62 +1,48 @@
-import { sendEmail, addNote, getCRMWares, getOffers, globalOffers, moduleName } from './crm_functions.js'
+import { sendMailCRM, addNote, getCRMWares, getOffers, globalOffers, MODULE_NAME, closeWidget, closeWidgetReload } from './crm_functions.js'
+import { errorMissingDataAlert, interactiveAlert, confirmSendDataAlert, loadingAlert, noSelectedAlert, errorNoOfferAlert } from './alerts.js'
+import { CrmUser } from './crmuser.js'
 
-let title = document.getElementById('title')
 let globalWares
-var userData = {}
+let title = document.getElementById('title')
 let container = document.getElementById('container')
 let form = document.getElementById('item-display')
 let buttonHolder = document.getElementById('buttons')
+var crmUser = new CrmUser()
 
-const closeWidget = ZOHO.CRM.UI.Popup.close
-const closeWidgetReload = ZOHO.CRM.UI.Popup.closeReload
-const sendDataAlert = (message) => swal({ title: 'Estas seguro?', text: message, icon: 'info', buttons: true })
-
-// INFO: Populate userData object
 ZOHO.embeddedApp.on('PageLoad', function (entity) {
-  userData = {
-    potential_id: entity.EntityId[0],
-    ware: {
-      id: '',
-      name: '',
-      url: '',
-      offer: {
-        id: '',
-        token: '',
-        name: '',
-      },
-    },
-  }
+  const potentialID = entity.EntityId[0]
+  crmUser.setPotentialID(potentialID)
 })
 
-function cleanCRMData(data) {
+function prepareCRMData(data) {
   let result = []
+
   data.forEach((ware) => {
     ware = { id: ware.wareID, name: ware.Name }
     result.push(ware)
   })
+
   return result
 }
 
-const getItemChossed = (item) => {
+function getItemSelected(item) {
   if (item.name === 'offers') {
-    userData.ware.offer.id = globalOffers[item.value].id
-    userData.ware.offer.token = globalOffers[item.value].token
-    userData.ware.offer.name = globalOffers[item.value].name
+    const offer = globalOffers[item.value]
+    crmUser.setOffer(offer)
   } else {
-    userData.ware.url = `https://0ptnz0iwzg.execute-api.us-east-1.amazonaws.com/qa/wares/${globalWares[item.value].wareID}/offers`
-    userData.ware.id = globalWares[item.value].wareID
-    userData.ware.name = globalWares[item.value].Name
+    const ware = globalWares[item.value]
+    crmUser.setWare(ware)
   }
 }
 
-function createRadioBox(data, name, index) {
+function makeRadioBox(data, name, index) {
   let radiobox = document.createElement('input')
   radiobox.type = 'radio'
   radiobox.id = data.id
   radiobox.value = index
   radiobox.name = name
   radiobox.addEventListener('click', () => {
-    getItemChossed(radiobox)
+    getItemSelected(radiobox)
   })
 
   let label = document.createElement('label')
@@ -71,91 +57,102 @@ function createRadioBox(data, name, index) {
 
 function displayItemsList(data, type, form, container) {
   for (let i = 0; i < data.length; i++) {
-    const radio = createRadioBox(data[i], type, i)
+    const radio = makeRadioBox(data[i], type, i)
     form.appendChild(radio)
   }
   container.style.position = 'center'
   container.appendChild(form)
 }
 
-/* async function getFormData(moduleName, userData) {
-  const formData = await ZOHO.CRM.API.getRecord({
-    Entity: moduleName,
-    RecordID: userData.potential_id,
-  }).then(function (data) {
-    if (data.status != 204) {
-      return data['data'][0]
-    } else {
-      return null
-    }
-  })
-  return await formData
-} */
-
-async function validateFormData(formData) {
+async function validateRecordData(recordData, requiredField) {
   try {
-    if (formData != null || formData != undefined) {
-      const requiredKey = ['Pais', 'Phone', 'Email']
-      let logErrors = []
-      requiredKey.map((elem) => {
-        // if (formData[elem] === null || formData[elem] === '') {
-        if (!formData[elem]) {
-          logErrors.push(elem)
-        }
-      })
-      if (logErrors.length > 0) {
-        let newLine = '\n- '
-        let message = 'Falta completar los siguientes campos:\n'
-        for (const error in logErrors) {
-          message = message + newLine + logErrors[error]
-        }
-        let waitOk = await swal(message, {
-          title: 'Falta Información',
-          icon: 'warning',
-          button: true,
-          closeOnClickOutside: false,
-        })
-        if (waitOk) {
-          console.log('Error: Falta de Datos')
-          closeWidget()
-        }
-      } else {
-        // console.log('Datos Validados')
-        return true
+    if (!recordData) return interactiveAlert('Error: On validate data', 'error').then(() => closeWidget())
+
+    const missingField = hasFields(recordData, requiredField)
+
+    if (missingField.length === 0) return true
+
+    let itemPrefix = '\n- '
+    let message = 'Completar los siguientes campos:\n'
+    for (const field in missingField) {
+      message = message + itemPrefix + missingField[field]
+    }
+
+    errorMissingDataAlert(message).then((clickOk) => {
+      if (clickOk) return closeWidget()
+    })
+
+  } catch (error) {
+    console.error('validateRecordData', error.name, error.message)
+  }
+}
+
+function hasFields(recordData, checkField) {
+    let missingField = []
+
+    checkField.map((field) => {
+      if (!recordData[field]) {
+        missingField.push(field)
       }
-    } else {
-      console.log('Error: on Validate')
-      swal('Error: On validate data.')
+    })
+
+  return missingField
+}
+
+
+async function oldValidateRecordData(recordData, requiredField) {
+  try {
+    if (!recordData) return interactiveAlert('Error: On validate data', 'error').then(() => closeWidget())
+
+    let missingField = []
+
+    requiredField.map((elem) => {
+      if (!recordData[elem]) {
+        missingField.push(elem)
+      }
+    })
+
+    if (missingField.length === 0) return true
+
+    const test = hasFields(recordData, requiredField)
+    console.log("test", test)
+    let itemPrefix = '\n- '
+    let message = 'Completar los siguientes campos:\n'
+    for (const field in missingField) {
+      message = message + itemPrefix + missingField[field]
+    }
+
+    let waitClickOk = await errorMissingDataAlert(message)
+    if (waitClickOk) {
+      console.log('Error: Missing data', missingField)
+      closeWidget()
       return false
     }
-  }
-  catch (error) {
-    console.error("validateFormData", error.name, error.message)
+  } catch (error) {
+    console.error('validateRecordData', error.name, error.message)
   }
 }
 
 async function userLoop() {
   try {
     cleanDisplay()
-    clearUserData()
-    const data = await getCRMWares()
-    globalWares = data
-    const wares = cleanCRMData(data)
-    swal('Cargando Wares', {
-      buttons: false,
-      timer: 1500,
-    }).then(() => {
+    crmUser.cleanUserProperties()
+
+    const rawData = await getCRMWares()
+    const wares = prepareCRMData(rawData)
+    globalWares = wares
+
+    loadingAlert('Cargando Wares...').then(() => {
       displayItemsList(wares, 'wares', form, container)
-      createButton('Ver Ofertas', 'button-ofertas', newShowOffers)
+      makeButton('Ver Ofertas', 'button-ofertas', displayOffers)
       title.innerHTML = 'Selecciona tu Ware'
     })
-  }
-  catch (error) {
-    console.error("userLoop", error.name, error.message)
+  } catch (error) {
+    console.error('userLoop', error.name, error.message)
   }
 }
 
-function createButton(inner, className, func) {
+function makeButton(inner, className, func) {
   let btn = document.createElement('button')
   btn.innerHTML = inner
   btn.classList = className
@@ -166,144 +163,71 @@ function createButton(inner, className, func) {
     func()
   })
   buttonHolder.appendChild(btn)
+
   return btn
 }
 
-async function showOffers() {
-  const container = document.getElementById('container')
-  const form = document.getElementById('item-display')
-  if (!userData.ware.id) {
-    // if (userData.ware.id === '' || userData.ware.id === null) {
-    let message = 'Tienes que seleccionar un Ware'
-    swal(message, {
-      icon: 'info',
-      button: true,
-      closeOnClickOutside: false,
-    })
-  } else {
-    const offers = await getOffers(userData.ware.url)
-    let message = offers['data']['message']
-    if (offers.code === 200) {
-      cleanDisplay()
-      swal('Buscando Ofertas!', {
-        button: false,
-        timer: 2500,
-      }).then(() => {
-        displayItemsList(offers['data'], 'offers', form, container)
-        document.getElementById('title').innerHTML = 'Selecciona tu Oferta'
-        createButton('Enviar Oferta', 'button-send', sendOffer)
-      })
-    } else {
-      swal(`${userData.ware.name}`, {
-        title: message,
-        icon: 'error',
-        button: false,
-        timer: 1500,
-      })
-    }
-  }
-}
+async function displayOffers() {
+  if (!crmUser.ware.id) return noSelectedAlert('Tienes que seleccionar un Ware')
 
-async function newShowOffers() {
-  const container = document.getElementById('container')
-  const form = document.getElementById('item-display')
-  // if (userData.ware.id === '' || userData.ware.id === null) {
-  if (!userData.ware.id) {
-    let message = 'Tienes que seleccionar un Ware'
-    swal(message, {
-      icon: 'info',
-      button: true,
-      closeOnClickOutside: false,
-    })
-  } else {
-    swal('Buscando Ofertas', {
-      button: false,
-      timer: 2000,
-    }).then(async () => {
-      let offers = await getOffers(userData.ware.url)
-      let message = offers['data']['message']
-      if (offers.code === 200) {
-        cleanDisplay()
-        displayItemsList(offers['data'], 'offers', form, container)
-        document.getElementById('title').innerHTML = 'Selecciona tu Oferta'
-        createButton('Volver', 'button-back', userLoop)
-        createButton('Enviar Oferta', 'button-send', sendOffer)
-      } else {
-        let title = `${userData.ware.name}`
-        swal(title, {
-          title: message,
-          icon: 'error',
-          button: false,
-          timer: 1800,
-        })
-      }
-    })
-  }
+  loadingAlert('Buscando Ofertas...', 4000)
+  let offersAPI = await getOffers(crmUser.ware.url)
+  let message = offersAPI.data.message
+
+  if (offersAPI.code !== 200) return errorNoOfferAlert(`${crmUser.ware.name}`, message)
+
+  loadingAlert('Cargando Ofertas...', 2000).then(() => {
+    cleanDisplay()
+    displayItemsList(offersAPI.data, 'offers', form, container)
+    makeButton('Volver', 'button-back', userLoop)
+    makeButton('Enviar Oferta', 'button-send', sendOffer)
+    document.getElementById('title').innerHTML = 'Selecciona tu Oferta'
+  })
 }
 
 function sendOffer() {
-  // if (userData.ware.offer.id === "" || userData.ware.offer.id === null) {
-  if (!userData.ware.offer.id) {
-    let message = 'Tienes que seleccionar una Oferta'
-    swal(message, {
-      icon: 'info',
-      button: true,
-      closeOnClickOutside: false,
-    })
-  } else {
-    const message = `Seleccionaste Ware '${userData.ware.name}' con Oferta '${userData.ware.offer.name}'`
-    sendDataAlert(message).then((readyToSend) => {
-      if (readyToSend) {
-        sendEmail(userData.ware.id, userData.ware.offer.token, userData.potential_id, userData.ware.name, userData.ware.offer.name).then((response) => {
-          if (!response) {
-            let message = 'Hubo un error en el envío de Información.\nFavor ver notas.'
-            swal(message, {
-              button: true,
-              icon: 'error',
-              closeOnClickOutside: false,
-            }).then((click) => {
-              if (click) {
-                closeWidgetReload()
-              }
-            })
-          } else {
-            let note_content = `Se envió información con Ware: ${userData.ware.name} y Oferta: ${userData.ware.offer.name}`
-            addNote(moduleName, note_content, userData.potential_id)
-            swal('Información enviada con éxito!', {
-              icon: 'success',
-              button: true,
-              closeOnClickOutside: false,
-            }).then((click) => {
-              if (click) {
-                closeWidgetReload()
-              }
-            })
+  if (!crmUser.offer.id) return noSelectedAlert('Tienes que seleccionar una Oferta')
+
+  const message = `Seleccionaste Ware '${crmUser.ware.name}' con Oferta '${crmUser.offer.name}'`
+
+  confirmSendDataAlert(message).then((isConfirm) => {
+    if (isConfirm) {
+
+      loadingAlert('Enviando información...', 6000)
+
+      sendMailCRM(crmUser).then((response) => {
+        if (!response) {
+          return interactiveAlert('Hubo un error en el envío de Información.\nFavor ver notas.', 'error').then((closeOk) => {
+            if (closeOk) {
+              closeWidgetReload()
+            }
+          })
+        }
+
+        let message = 'Información enviada con éxito!'
+        interactiveAlert(message, 'success').then((confirm) => {
+          if (confirm) {
+            let note_content = `Se envió información con Ware: ${crmUser.ware.name} y Oferta: ${crmUser.offer.name}`
+            addNote(MODULE_NAME, note_content, crmUser.potential.id)
+            closeWidgetReload()
           }
         })
-      }
-    })
-  }
+      })
+    }
+  })
 }
+
 
 function cleanDisplay() {
   title.innerHTML = ''
   form.innerHTML = ''
   buttonHolder.innerHTML = ''
   container.innerHTML = ''
-  // document.getElementById('button-ofertas').style.display = 'none'
+  // makeButton('User', 'nose', showUser)
 }
 
-function clearUserData() {
-  userData.ware = {
-    id: '',
-    name: '',
-    url: '',
-    offer: {
-      id: '',
-      token: '',
-      name: '',
-    },
-  }
+function showUser() {
+  console.log(crmUser)
 }
 
-export { userLoop, cleanCRMData, getItemChossed, createRadioBox, displayItemsList, validateFormData, userData }
+export { userLoop, prepareCRMData, getItemSelected, makeRadioBox, displayItemsList, validateRecordData, crmUser, showUser }

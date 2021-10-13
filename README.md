@@ -13,6 +13,8 @@ I'm learning Javascript so I made a small Widget to integrate external API with 
     │   │   ├── crm_functions.js
     │   │   ├── functions.js
     │   │   ├── main.js
+    │   │   ├── crmuser.js
+    │   │   └── alerts.js
     │   ├── translations
     │   │   └── en.json
     │   └── widget.html

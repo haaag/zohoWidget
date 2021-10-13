@@ -1,12 +1,16 @@
-import { validateFormData, userData, userLoop } from './functions.js'
-import { getFormData, moduleName } from './crm_functions.js'
+import { validateRecordData, crmUser, userLoop } from './functions.js'
+import { getRecordData, MODULE_NAME } from './crm_functions.js'
+import { loadingAlert } from './alerts.js'
+
+const requiredAPIField = ['Phone', 'Email']
+
 
 ZOHO.embeddedApp.init().then(function () {
-  swal('Iniciando Widget', { buttons: false, timer: 1500 })
+  loadingAlert("Iniciando Widget...")
   try {
     setTimeout(() => {
-      getFormData(moduleName, userData).then((formData) => {
-        validateFormData(formData).then((proceed) => {
+      getRecordData(MODULE_NAME, crmUser.potential.id).then((recordData) => {
+        validateRecordData(recordData, requiredAPIField).then((proceed) => {
           if (proceed) {
             userLoop()
           }
@@ -14,6 +18,6 @@ ZOHO.embeddedApp.init().then(function () {
       })
     }, 1100)
   } catch (err) {
-    console.error(err)
+    console.error('On init', err)
   }
 })
