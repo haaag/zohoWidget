@@ -1,46 +1,5 @@
-import { loadingAlert } from "./alerts.js"
-
 const MODULE_NAME = 'Deals'
 var globalOffers
-
-async function oldSendMail(ware, offerToken, potentialID, wareName, offerName) {
-  /*
-   * @ware: string - ware_id seleccionado por el usuario
-   * @offer_token: string - token seleccionado por el usuario
-   * @potentialID: string - potential id
-   * @wareName: string - potential id
-   * @offerName: string - potential id
-   * The return value is 'bool'
-   */
-  const start = Date.now()
-  try {
-    loadingAlert('Enviando información', 7000)
-    let connName = 'widget_send'
-    let sendData = {
-      arguments: JSON.stringify({
-        offer_token: offerToken,
-        ware_id: ware,
-        form_id: potentialID,
-        ware_name: wareName,
-        offer_name: offerName,
-      }),
-    }
-    const send = await ZOHO.CRM.FUNCTIONS.execute(connName, sendData).then((data) => {
-      const result = data['details']['output']
-      const response = JSON.parse(result)
-      if (response.code !== 201) {
-        return false
-      }
-      return true
-    })
-    return send
-  } catch (err) {
-    console.error(err)
-  } finally {
-    console.info(Date.now() - start)
-  }
-}
-
 
 async function sendMailCRM(potentialData) {
   /*
@@ -63,51 +22,6 @@ async function sendMailCRM(potentialData) {
     }
 
     const crmSend = await ZOHO.CRM.FUNCTIONS.execute(functionName, sendArgs).then((data) => {
-      const result = data['details']['output']
-      const response = JSON.parse(result)
-      if (response.code !== 201) {
-        return false
-      }
-      return true
-    })
-
-    return crmSend
-  } catch (err) {
-
-    console.error(err)
-
-  } finally {
-    console.info(Date.now() - start)
-  }
-}
-
-
-async function oldoldsendMailCRM(potentialData) {
-  /*
-   * @ware: string - ware_id seleccionado por el usuario
-   * @offer_token: string - token seleccionado por el usuario
-   * @potentialID: string - potential id
-   * @wareName: string - potential id
-   * @offerName: string - potential id
-   * The return value is 'bool'
-   */
-  const start = Date.now()
-  try {
-
-    // loadingAlert('Enviando información', 6500)
-
-    let funcName = 'widget_send'
-    let sendArgs = {
-      arguments: JSON.stringify({
-        offer_token: potentialData.offer.token,
-        ware_id: potentialData.ware.id,
-        form_id: potentialData.potential.id,
-        ware_name: potentialData.ware.name,
-        offer_name: potentialData.offer.name,
-      }),
-    }
-
-    const crmSend = await ZOHO.CRM.FUNCTIONS.execute(funcName, sendArgs).then((data) => {
       const result = data['details']['output']
       const response = JSON.parse(result)
       if (response.code !== 201) {
@@ -191,4 +105,4 @@ const closeWidget = ZOHO.CRM.UI.Popup.close
 const closeWidgetReload = ZOHO.CRM.UI.Popup.closeReload
 
 
-export { oldSendMail, addNote, getCRMWares, getOffers, globalOffers, getRecordData, MODULE_NAME, sendMailCRM, closeWidget, closeWidgetReload }
+export { addNote, getCRMWares, getOffers, globalOffers, getRecordData, MODULE_NAME, sendMailCRM, closeWidget, closeWidgetReload }
