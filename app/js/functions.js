@@ -100,39 +100,6 @@ function hasFields(recordData, checkField) {
 }
 
 
-async function oldValidateRecordData(recordData, requiredField) {
-  try {
-    if (!recordData) return interactiveAlert('Error: On validate data', 'error').then(() => closeWidget())
-
-    let missingField = []
-
-    requiredField.map((elem) => {
-      if (!recordData[elem]) {
-        missingField.push(elem)
-      }
-    })
-
-    if (missingField.length === 0) return true
-
-    const test = hasFields(recordData, requiredField)
-    console.log("test", test)
-    let itemPrefix = '\n- '
-    let message = 'Completar los siguientes campos:\n'
-    for (const field in missingField) {
-      message = message + itemPrefix + missingField[field]
-    }
-
-    let waitClickOk = await errorMissingDataAlert(message)
-    if (waitClickOk) {
-      console.log('Error: Missing data', missingField)
-      closeWidget()
-      return false
-    }
-  } catch (error) {
-    console.error('validateRecordData', error.name, error.message)
-  }
-}
-
 async function userLoop() {
   try {
     cleanDisplay()
@@ -193,7 +160,7 @@ function sendOffer() {
   confirmSendDataAlert(message).then((isConfirm) => {
     if (isConfirm) {
 
-      loadingAlert('Enviando información...', 6000)
+      loadingAlert('Enviando información...', 6500)
 
       sendMailCRM(crmUser).then((response) => {
         if (!response) {
