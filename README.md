@@ -4,6 +4,11 @@
 
 I'm learning Javascript so I made a small Widget to integrate external API with Zoho CRM
 
+We had the need to show users, who work within the __Deals__ module, different options to choose in a dynamic way and in __real time__. Obtaining the information from an __API__ external to Zoho. Sending `GET` and `POST`.
+
+
+<img align="center" width="989" height="895" src="https://github.com/haaag/zohoWidget/blob/master/img/02-wares-seleccion.png?raw=true">
+
 ## Folder Structure
 
     ├── app
