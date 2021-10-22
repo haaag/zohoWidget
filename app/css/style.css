@@ -133,37 +133,6 @@ label span:before {
   overflow: hidden;
 }
 
-/* .swal-button {
-  padding: 3px 15px 4px !important;
-  border-radius: 2px !important;
-  color: #0078ff !important;
-  border: 1px solid #4ca2ff !important;
-  background: #edf6ff !important;
-  font-size: 1.0rem !important;
-} */
-
-/*
-.swal-button {
-	font-family: var(--crm-font-medium);
-	outline: none!important;
-	display: inline-block;
-	width: auto!important;
-	color: #0078ff!important;
-	border: 1px solid #4ca2ff!important;
-	background: #edf6ff!important;
-	box-shadow: none!important;
-	padding: 3px 15px 4px!important;
-	font-size: 1.3rem!important;
-	border-radius: 4px!important;
-	line-height: normal!important;
-	text-decoration: none!important;
-	cursor: pointer;
-	-webkit-appearance: none;
-	-moz-appearance: none;
-	appearance: none;
-}
-*/
-
 /* Buttons */
 .buttonHolder {
   text-align: center;
