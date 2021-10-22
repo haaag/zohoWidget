@@ -15,15 +15,20 @@ function loadingAlert(message, timer = 1500) {
   return swal(message, { buttons: false, timer: timer })
 }
 
-const noSelectedAlert = (message) =>
-  swal(message, {
+function noSelectedAlert(message) {
+  return swal(message, {
     icon: 'info',
     button: true,
     closeOnClickOutside: false,
   })
+}
 
-const errorNoOfferAlert = (message, title) => swal(message, { title: title, icon: 'error', button: false, timer: 1500 })
+function errorNoOfferAlert(message, title) {
+  return swal(message, { title: title, icon: 'error', button: false, timer: 1500 })
+}
 
-const interactiveAlert = (message, icon) => swal(message, { button: true, icon: icon, closeOnClickOutside: false })
+function interactiveAlert(message, icon) {
+  return swal(message, { button: true, icon: icon, closeOnClickOutside: false })
+}
 
 export { confirmSendDataAlert, errorMissingDataAlert, loadingAlert, noSelectedAlert, errorNoOfferAlert, interactiveAlert }
