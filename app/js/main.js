@@ -2,7 +2,7 @@ import { validateRecordData, crmUser, userLoop } from './functions.js'
 import { getRecordData, MODULE_NAME } from './crm_functions.js'
 import { loadingAlert } from './alerts.js'
 
-const requiredAPIField = ['Phone', 'Email']
+const requiredAPIField = ['Phone', 'Email', 'Pais']
 
 
 ZOHO.embeddedApp.init().then(function () {
