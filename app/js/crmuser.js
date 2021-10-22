@@ -1,8 +1,8 @@
 class CrmUser {
   constructor() {
-    this.potential = {}
-    this.ware = {}
-    this.offer = {}
+    this.potential = { id: '' }
+    this.ware = { id: '', url: '', name: '' }
+    this.offer = { id: '', name: '' }
   }
 
   setPotentialID(recordID) {
