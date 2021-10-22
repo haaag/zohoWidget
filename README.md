@@ -2,14 +2,15 @@
 
 ## Description
 
-I'm learning Javascript so I made a small Widget to integrate external API with Zoho CRM
-
-We had the need to show users, who work within the __Deals__ module, different options to choose in a dynamic way and in __real time__. Obtaining the information from an __API__ external to Zoho. Sending `GET` and `POST`.
+We had the need to show users, who work within the __Potentials__ module, different options to choose from in a dynamic way, no need to force the user to __refresh__ the webpage to see some new data. So, the best way to do this is obtaining the information by using `GET` and `POST` to an external `API` to Zoho. The user can select the data they need, send it to the external API, get the results and send them to Zoho to be processed.
 
 
-<img align="center" width="989" height="895" src="https://github.com/haaag/zohoWidget/blob/master/img/02-wares-seleccion.png?raw=true">
+<img align="center" width="930" height="898" src="https://github.com/haaag/zohoWidget/blob/master/img/02-wares-seleccion.png?raw=true">
 
-## Folder Structure
+And we try to imitate the zoho interface so that the user feels more comfortable.
+`Sorry mobile users`
+
+## Project Structure
 
     ├── app
     │   ├── css
@@ -29,6 +30,21 @@ We had the need to show users, who work within the __Deals__ module, different o
 
 
 ## Functions I used for this project
+## Deluge
+
+[deluge_function](https://help.zwidgets.com/help/latest/ZOHO.CRM.FUNCTIONS.html)
+
+---
+## Javascript
+
+##  Register Listeners with EmbededApp
+### Subscribe to the EmbeddedApp onPageLoad event before initializing
+- [ZOHO.embeddedApp.on("PageLoad")](https://help.zwidgets.com/help/latest/index.html)
+
+Here we get the id of the potential.
+
+### Initializing the widget.
+- [ZOHO.embeddedApp.init()](https://help.zwidgets.com/help/latest/index.html)
 
 ### Invoke a Function
 [ZOHO.CRM.FUNCTIONS.execute](https://help.zwidgets.com/help/latest/ZOHO.CRM.FUNCTIONS.html)
@@ -73,14 +89,11 @@ Return type: `promise`
 
 ---
 
-##  Register Listeners with EmbededApp
-### Subscribe to the EmbeddedApp onPageLoad event before initializing
-- [ZOHO.embeddedApp.on("PageLoad")](https://help.zwidgets.com/help/latest/index.html)
-
-### Initializing the widget.
-- [ZOHO.embeddedApp.init()](https://help.zwidgets.com/help/latest/index.html)
-
-
 
 ## Reference
-[JS SDK for Zoho CRM](https://help.zwidgets.com/help/latest/index.html)
+[JS SDK from Zoho CRM](https://help.zwidgets.com/help/latest/index.html)
+
+## TODO
+- [ ] Add some description to deluge function.
+- [ ] Add some dummy example data
+
