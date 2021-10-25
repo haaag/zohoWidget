@@ -1,4 +1,4 @@
-import { sendMailCRM, addNote, getCRMWares, getOffers, globalOffers, MODULE_NAME, closeWidget, closeWidgetReload } from './crm_functions.js'
+import { sendMailCRM, addNote, getCRMWares, getOffers, globalOffers, MODULE_NAME, closeWidget, closeWidgetReload } from './utilsCrm.js'
 import { errorMissingDataAlert, interactiveAlert, confirmSendDataAlert, loadingAlert, noSelectedAlert, errorNoOfferAlert } from './alerts.js'
 import { CrmUser } from './crmuser.js'
 

@@ -1,5 +1,5 @@
-import { validateRecordData, crmUser, userLoop } from './functions.js'
-import { getRecordData, MODULE_NAME } from './crm_functions.js'
+import { validateRecordData, crmUser, userLoop } from './utils.js'
+import { getRecordData, MODULE_NAME } from './crm_utils.js'
 import { loadingAlert } from './alerts.js'
 
 const requiredAPIField = ['Phone', 'Email', 'Pais']
