@@ -16,8 +16,8 @@ And we try to imitate the zoho interface so that the user feels more comfortable
     │   ├── css
     │   │   └── style.css
     │   ├── js
-    │   │   ├── crm_functions.js
-    │   │   ├── functions.js
+    │   │   ├── utilsCrm.js
+    │   │   ├── utils.js
     │   │   ├── main.js
     │   │   ├── crmuser.js
     │   │   └── alerts.js
