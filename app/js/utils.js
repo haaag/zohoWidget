@@ -64,7 +64,7 @@ function displayItemsList(data, type, form, container) {
   container.appendChild(form)
 }
 
-async function validateRecordData(recordData, requiredField) {
+async function validateFields(recordData, requiredField) {
   try {
     if (!recordData) return interactiveAlert('Error: On validate data', 'error').then(() => closeWidget())
 
@@ -81,24 +81,22 @@ async function validateRecordData(recordData, requiredField) {
     errorMissingDataAlert(message).then((clickOk) => {
       if (clickOk) return closeWidget()
     })
-
   } catch (error) {
     console.error('validateRecordData', error.name, error.message)
   }
 }
 
 function hasFields(recordData, checkField) {
-    let missingField = []
+  let missingField = []
 
-    checkField.map((field) => {
-      if (!recordData[field]) {
-        missingField.push(field)
-      }
-    })
+  checkField.map((field) => {
+    if (!recordData[field]) {
+      missingField.push(field)
+    }
+  })
 
   return missingField
 }
-
 
 async function userLoop() {
   try {
@@ -109,10 +107,10 @@ async function userLoop() {
     const wares = prepareCRMData(rawData)
     globalWares = wares
 
-    loadingAlert('Cargando Wares...').then(() => {
+    loadingAlert('Cargando Clusters...').then(() => {
       displayItemsList(wares, 'wares', form, container)
-      makeButton('Ver Ofertas', 'button-ofertas', displayOffers)
-      title.innerHTML = 'Selecciona tu Ware'
+      makeButton('Ver Beneficio', 'button-ofertas', displayOffers)
+      title.innerHTML = 'Selecciona tu Cluster'
     })
   } catch (error) {
     console.error('userLoop', error.name, error.message)
@@ -135,31 +133,30 @@ function makeButton(inner, className, func) {
 }
 
 async function displayOffers() {
-  if (!crmUser.ware.id) return noSelectedAlert('Tienes que seleccionar un Ware')
+  if (!crmUser.ware.id) return noSelectedAlert('Tienes que seleccionar un Cluster')
 
-  loadingAlert('Buscando Ofertas...', 4000)
+  loadingAlert('Buscando Beneficios...', 4000)
   let offersAPI = await getOffers(crmUser.ware.url)
   let message = offersAPI.data.message
 
   if (offersAPI.code !== 200) return errorNoOfferAlert(`${crmUser.ware.name}`, message)
 
-  loadingAlert('Cargando Ofertas...', 2000).then(() => {
+  loadingAlert('Cargando Beneficios...', 2000).then(() => {
     cleanDisplay()
     displayItemsList(offersAPI.data, 'offers', form, container)
     makeButton('Volver', 'button-back', userLoop)
-    makeButton('Enviar Oferta', 'button-send', sendOffer)
-    document.getElementById('title').innerHTML = 'Selecciona tu Oferta'
+    makeButton('Enviar Beneficio', 'button-send', sendOffer)
+    document.getElementById('title').innerHTML = 'Selecciona tu Beneficio'
   })
 }
 
 function sendOffer() {
-  if (!crmUser.offer.id) return noSelectedAlert('Tienes que seleccionar una Oferta')
+  if (!crmUser.offer.id) return noSelectedAlert('Tienes que seleccionar una Beneficio')
 
-  const message = `Seleccionaste Ware '${crmUser.ware.name}' con Oferta '${crmUser.offer.name}'`
+  const message = `Seleccionaste Cluster '${crmUser.ware.name}' con Beneficio '${crmUser.offer.name}'`
 
   confirmSendDataAlert(message).then((isConfirm) => {
     if (isConfirm) {
-
       loadingAlert('Enviando información...', 6500)
 
       sendMailCRM(crmUser).then((response) => {
@@ -174,8 +171,8 @@ function sendOffer() {
         let message = 'Información enviada con éxito!'
         interactiveAlert(message, 'success').then((confirm) => {
           if (confirm) {
-            let note_content = `Se envió información con Ware: ${crmUser.ware.name} y Oferta: ${crmUser.offer.name}`
-            addNote(MODULE_NAME, note_content, crmUser.potential.id)
+            // let note_content = `Se envió información con Cluster: ${crmUser.ware.name} y Beneficio: ${crmUser.offer.name}`
+            // addNote(MODULE_NAME, note_content, crmUser.potential.id)
             closeWidgetReload()
           }
         })
@@ -184,17 +181,29 @@ function sendOffer() {
   })
 }
 
+async function validateStages(recordData, validStages) {
+  try {
+    if (!recordData) return interactiveAlert('Error: Validate Stages', 'error').then(() => closeWidget())
+    console.log(recordData)
+    const formStage = recordData['Stage']
+
+    let message = `Stage No Valido: ${formStage}`
+    if (!validStages.includes(formStage)) return interactiveAlert(message, 'error').then(() => closeWidget())
+    return true
+  } catch (error) {
+    console.log('validateStages', error.name, error.message)
+  }
+}
 
 function cleanDisplay() {
   title.innerHTML = ''
   form.innerHTML = ''
   buttonHolder.innerHTML = ''
   container.innerHTML = ''
-  // makeButton('User', 'nose', showUser)
 }
 
 function showUser() {
   console.log(crmUser)
 }
 
-export { userLoop, prepareCRMData, getItemSelected, makeRadioBox, displayItemsList, validateRecordData, crmUser, showUser }
+export { userLoop, prepareCRMData, getItemSelected, makeRadioBox, displayItemsList, validateFields, crmUser, showUser, validateStages }

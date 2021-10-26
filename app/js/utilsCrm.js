@@ -50,7 +50,7 @@ function addNote(moduleName, content, potentialID) {
   ZOHO.CRM.API.addNotes({
     Entity: moduleName,
     RecordID: potentialID,
-    Title: 'Selección Wares & Ofertas',
+    Title: 'Selección Cluster & Beneficio',
     Content: content,
   })
 }
