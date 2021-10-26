@@ -82,7 +82,7 @@ async function validateFields(recordData, requiredField) {
       if (clickOk) return closeWidget()
     })
   } catch (error) {
-    console.error('validateRecordData', error.name, error.message)
+    console.error('validateFields', error.name, error.message)
   }
 }
 
@@ -184,7 +184,6 @@ function sendOffer() {
 async function validateStages(recordData, validStages) {
   try {
     if (!recordData) return interactiveAlert('Error: Validate Stages', 'error').then(() => closeWidget())
-    console.log(recordData)
     const formStage = recordData['Stage']
 
     let message = `Stage No Valido: ${formStage}`
