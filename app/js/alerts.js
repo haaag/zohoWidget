@@ -24,11 +24,15 @@ function noSelectedAlert(message) {
 }
 
 function errorNoOfferAlert(message, title) {
-  return swal(message, { title: title, icon: 'error', button: false, timer: 1500 })
+  return swal(message, { title: title, icon: 'error', timer: 1700 })
+}
+
+function errorGettingOffers(message) {
+  return swal(message, { icon: 'error', button: true })
 }
 
 function interactiveAlert(message, icon) {
   return swal(message, { button: true, icon: icon, closeOnClickOutside: false })
 }
 
-export { confirmSendDataAlert, errorMissingDataAlert, loadingAlert, noSelectedAlert, errorNoOfferAlert, interactiveAlert }
+export { confirmSendDataAlert, errorMissingDataAlert, loadingAlert, noSelectedAlert, errorNoOfferAlert, interactiveAlert, errorGettingOffers }

@@ -65,14 +65,14 @@ async function getCRMWares() {
   return await crmWares
 }
 
-async function getOffers(wareURL) {
+async function getOffers(wareID) {
   /*
    * @wareURL: string
    * The return value is Array(objects)
    */
   let connName = 'widget_offers'
   let sendData = {
-    ware_url: wareURL,
+    ware_id: wareID,
   }
   const response = await ZOHO.CRM.FUNCTIONS.execute(connName, sendData)
   const offersList = JSON.parse(response['details']['output'])

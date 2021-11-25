@@ -1,5 +1,5 @@
-import { sendMailCRM, addNote, getCRMWares, getOffers, globalOffers, MODULE_NAME, closeWidget, closeWidgetReload } from './utilsCrm.js'
-import { errorMissingDataAlert, interactiveAlert, confirmSendDataAlert, loadingAlert, noSelectedAlert, errorNoOfferAlert } from './alerts.js'
+import { sendMailCRM, getCRMWares, getOffers, globalOffers, closeWidget, closeWidgetReload } from './utilsCrm.js'
+import { errorMissingDataAlert, interactiveAlert, confirmSendDataAlert, loadingAlert, noSelectedAlert, errorNoOfferAlert, errorGettingOffers } from './alerts.js'
 import { CrmUser } from './crmuser.js'
 
 let globalWares
@@ -136,10 +136,12 @@ async function displayOffers() {
   if (!crmUser.ware.id) return noSelectedAlert('Tienes que seleccionar un Cluster')
 
   loadingAlert('Buscando Beneficios...', 4000)
-  let offersAPI = await getOffers(crmUser.ware.url)
+  let offersAPI = await getOffers(crmUser.ware.id)
   let message = offersAPI.data.message
 
-  if (offersAPI.code !== 200) return errorNoOfferAlert(`${crmUser.ware.name}`, message)
+  if (offersAPI.code === 404) return errorNoOfferAlert(`${crmUser.ware.name}`, message)
+
+  if (offersAPI.code !== 404 && offersAPI.code !== 200) return errorGettingOffers(message)
 
   loadingAlert('Cargando Beneficios...', 2000).then(() => {
     cleanDisplay()
@@ -171,8 +173,6 @@ function sendOffer() {
         let message = 'Información enviada con éxito!'
         interactiveAlert(message, 'success').then((confirm) => {
           if (confirm) {
-            // let note_content = `Se envió información con Cluster: ${crmUser.ware.name} y Beneficio: ${crmUser.offer.name}`
-            // addNote(MODULE_NAME, note_content, crmUser.potential.id)
             closeWidgetReload()
           }
         })
@@ -186,8 +186,8 @@ async function validateStages(recordData, validStages) {
     if (!recordData) return interactiveAlert('Error: Validate Stages', 'error').then(() => closeWidget())
     const formStage = recordData['Stage']
 
-    let message = `Stage No Valido: ${formStage}`
-    if (!validStages.includes(formStage)) return interactiveAlert(message, 'error').then(() => closeWidget())
+    let message = 'No es posible crear el botón de pago. Por favor cambia el stage a "Próximo a cerrar" e intenta nuevamente.'
+    if (!validStages.includes(formStage)) return interactiveAlert(message, 'info').then(() => closeWidget())
     return true
   } catch (error) {
     console.log('validateStages', error.name, error.message)

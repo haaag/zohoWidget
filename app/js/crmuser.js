@@ -1,7 +1,7 @@
 class CrmUser {
   constructor() {
     this.potential = { id: '' }
-    this.ware = { id: '', url: '', name: '' }
+    this.ware = { id: '', name: '' }
     this.offer = { id: '', name: '' }
   }
 
@@ -11,9 +11,7 @@ class CrmUser {
   }
 
   setWare(ware) {
-    const wareUrl = `https://0ptnz0iwzg.execute-api.us-east-1.amazonaws.com/qa/wares/${ware.id}/offers`
     this.ware = ware
-    this.ware.url = wareUrl
     return this
   }
 
