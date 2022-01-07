@@ -35,4 +35,8 @@ function interactiveAlert(message, icon) {
   return swal(message, { button: true, icon: icon, closeOnClickOutside: false })
 }
 
-export { confirmSendDataAlert, errorMissingDataAlert, loadingAlert, noSelectedAlert, errorNoOfferAlert, interactiveAlert, errorGettingOffers }
+function errorNoClusters(message, title) {
+    return swal(message, { title: title, icon: 'error', closeOnClickOutside: false})
+}
+
+export { confirmSendDataAlert, errorMissingDataAlert, loadingAlert, noSelectedAlert, errorNoOfferAlert, interactiveAlert, errorGettingOffers, errorNoClusters }

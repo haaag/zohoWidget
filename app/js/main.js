@@ -5,6 +5,7 @@ import { loadingAlert } from './alerts.js'
 const requiredAPIField = ['Phone', 'Email', 'Pais']
 const validStages = ['Información enviada', 'Interesado - Nivel 2', 'Próximo a cerrar', 'Boton de Pago Enviado']
 
+
 ZOHO.embeddedApp.init().then(function () {
   loadingAlert('Iniciando Widget...')
   try {

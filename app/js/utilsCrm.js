@@ -1,3 +1,5 @@
+import { errorNoClusters } from './alerts'
+
 const MODULE_NAME = 'Deals'
 var globalOffers
 
@@ -6,10 +8,9 @@ async function sendMailCRM(potentialData) {
    * @potentialData - userCrm object
    * @return bool
    */
-  const {ware, offer, potential} = potentialData;
+  const { ware, offer, potential } = potentialData
   const start = Date.now()
   try {
-
     let functionName = 'widget_send'
     let sendArgs = {
       arguments: JSON.stringify({
@@ -32,9 +33,7 @@ async function sendMailCRM(potentialData) {
 
     return crmSend
   } catch (err) {
-
     console.error(err)
-
   } finally {
     console.info(Date.now() - start)
   }
@@ -60,7 +59,16 @@ async function getCRMWares() {
   const crmWares = await ZOHO.CRM.API.getAllRecords({
     Entity: moduleWares,
   }).then(function (data) {
-    return data['data']
+    let clusterList = data['data']
+
+    if (clusterList.length > 0) {
+      errorNoClusters('Por favor si persiste el problema, comunicate con el administrador.', 'No hay Clusters').then((clickOk) => {
+        if (clickOk) return closeWidget()
+      })
+    }
+
+    // return data['data']
+    return clusterList
   })
   return await crmWares
 }
@@ -90,10 +98,8 @@ async function getRecordData(moduleName, potentialID) {
     Entity: moduleName,
     RecordID: potentialID,
   }).then(function (data) {
-
     if (data.status != 204) {
       return data['data'][0]
-
     } else {
       return null
     }
@@ -103,6 +109,5 @@ async function getRecordData(moduleName, potentialID) {
 
 const closeWidget = ZOHO.CRM.UI.Popup.close
 const closeWidgetReload = ZOHO.CRM.UI.Popup.closeReload
-
 
 export { addNote, getCRMWares, getOffers, globalOffers, getRecordData, MODULE_NAME, sendMailCRM, closeWidget, closeWidgetReload }
