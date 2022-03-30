@@ -20,7 +20,7 @@ body {
   font-family: var(--crm-font-medium);
   font-size: 20px;
   -webkit-font-smoothing: antialiased;
-	transition: width 1s ease-out;
+  transition: width 1s ease-out;
 }
 
 .h2 {
@@ -42,7 +42,6 @@ body {
   align-items: center;
   padding: 20px;
 } */
-
 
 #container {
   position: center;
