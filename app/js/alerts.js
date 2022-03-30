@@ -36,7 +36,7 @@ function interactiveAlert(message, icon) {
 }
 
 function errorNoClusters(message, title) {
-    return swal(message, { title: title, icon: 'error', closeOnClickOutside: false})
+  return swal(message, { title: title, icon: 'error', closeOnClickOutside: false })
 }
 
 export { confirmSendDataAlert, errorMissingDataAlert, loadingAlert, noSelectedAlert, errorNoOfferAlert, interactiveAlert, errorGettingOffers, errorNoClusters }
