@@ -4,8 +4,6 @@
 
 We had the need to show users, who work within the __Potentials__ module, different options to choose from in a dynamic way, no need to force the user to __refresh__ the webpage to see some new data. So, the best way to do this is obtaining the information by using `GET` and `POST` to an external `API` to Zoho. The user can select the data they need, send it to the external API, get the results and send them to Zoho to be processed.
 
-TEST
-
 <img align="center" width="930" height="898" src="https://github.com/haaag/zohoWidget/blob/master/img/02-wares-seleccion.png?raw=true">
 
 And we try to imitate the zoho interface so that the user feels more comfortable.
